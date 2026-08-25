@@ -293,8 +293,7 @@ function createEngine(options: {
 }
 
 describe('observation curation trigger', () => {
-  // The trigger is fire-and-forget on the observe path; let it settle.
-  const settle = () => new Promise(resolve => setTimeout(resolve, 20));
+  // The trigger is fire-and-forget on the observe path; `settled()` joins the tracked work.
 
   it('fires runCuration once the uncurated record count reaches the threshold', async () => {
     const runCuration = vi.fn(async () => ({ outcome: 'ran' }));
@@ -307,7 +306,7 @@ describe('observation curation trigger', () => {
       requestContext: requestContext(),
     });
     expect(result.observed).toBe(true);
-    await settle();
+    await om.settled();
 
     expect(runCuration).toHaveBeenCalledOnce();
     expect(runCuration).toHaveBeenCalledWith(expect.objectContaining({ threadId, requestContext: expect.anything() }));
@@ -323,7 +322,7 @@ describe('observation curation trigger', () => {
       requestContext: requestContext(),
     });
     expect(result.observed).toBe(true);
-    await settle();
+    await om.settled();
 
     expect(runCuration).not.toHaveBeenCalled();
   });
@@ -337,7 +336,7 @@ describe('observation curation trigger', () => {
       messages: createBulkMessages(10, 'cadence-thread'),
       requestContext: requestContext(),
     });
-    await settle();
+    await om.settled();
 
     expect(runCuration).toHaveBeenCalledOnce();
   });
@@ -356,7 +355,7 @@ describe('observation curation trigger', () => {
       messages: createBulkMessages(10, 'stale-thread'),
       requestContext: requestContext(),
     });
-    await settle();
+    await om.settled();
 
     expect(runCuration).toHaveBeenCalledOnce();
   });
@@ -375,7 +374,7 @@ describe('observation curation trigger', () => {
       messages: createBulkMessages(10, 'idle-thread'),
       requestContext: requestContext(),
     });
-    await settle();
+    await om.settled();
 
     expect(runCuration).not.toHaveBeenCalled();
   });
@@ -390,7 +389,7 @@ describe('observation curation trigger', () => {
       requestContext: requestContext(),
     });
     expect(result.observed).toBe(true);
-    await settle();
+    await om.settled();
 
     expect(runCuration).not.toHaveBeenCalled();
   });
@@ -400,7 +399,7 @@ describe('observation curation trigger', () => {
     const om = createEngine({ threshold: 1, memory: stubCurationMemory({ uncurated: 5, runCuration }) });
 
     await om.observe({ threadId: 'no-org-thread', messages: createBulkMessages(10, 'no-org-thread') });
-    await settle();
+    await om.settled();
 
     expect(runCuration).not.toHaveBeenCalled();
   });

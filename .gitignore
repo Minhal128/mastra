@@ -7,7 +7,6 @@ test-outputs/
 .mastra-om-repro/
 
 # IDE
-.vscode/
 .idea/
 .history/
 .context/
@@ -17,8 +16,6 @@ test-outputs/
 .pr-review/
 .artifacts/
 
-.env
-.env.local
 .env.*.local
 
 **/tsconfig.tsbuildinfo
@@ -89,3 +86,4 @@ om-reflector-fixture.json
 
 # Local git worktrees (scratch checkouts; never part of a commit)
 .worktrees/
+config.bat
